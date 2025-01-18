@@ -1,24 +1,15 @@
 .\"
-.\" Permission to use, copy, modify, and distribute this
-.\" software and its documentation for any purpose and without
-.\" fee is hereby granted, provided that the above copyright
-.\" notice appear in all copies and that both that copyright
-.\" notice and this permission notice appear in supporting
-.\" documentation, and that the name of M.I.T. not be used in
-.\" advertising or publicity pertaining to distribution of the
-.\" software without specific, written prior permission.
-.\" M.I.T. makes no representations about the suitability of
-.\" this software for any purpose.  It is provided "as is"
-.\" without express or implied warranty.
+.\" Copyright (C) Daniel Stenberg
+.\" SPDX-License-Identifier: MIT
 .\"
 .TH ARES_SET_SORTLIST 3 "23 November 2015"
 .SH NAME
-ares_set_sortlist \- Initialize an ares_channel sortlist configuration
+ares_set_sortlist \- Initialize an ares_channel_t *sortlist configuration
 .SH SYNOPSIS
 .nf
 #include <ares.h>
 
-int ares_set_sortlist(ares_channel \fIchannel\fP, const char *\fIsortstr\fP)
+int ares_set_sortlist(ares_channel_t *\fIchannel\fP, const char *\fIsortstr\fP)
 .fi
 .SH DESCRIPTION
 The \fBares_set_sortlist(3)\fP function initializes an address sortlist configuration
@@ -29,10 +20,17 @@ sortlist.  The provided
 .IR sortstr
 string that holds a space separated list of IP-address-netmask pairs.  The
 netmask is optional but follows the address after a slash if present.  For example,
-"130.155.160.0/255.255.240.0 130.155.0.0".
+"130.155.160.0/255.255.240.0 130.155.0.0" will sort IPs in ascending
+order of appearance in the sortlist subnets, with those IPs that do
+not match any subnets coming last.  There is no particular order
+amongst IPs that tie in this sorting scheme.
 
-This function replaces any potentially previously configured address sortlist
-with the ones given in the configuration string.
+This function replaces any potentially previously configured address
+sortlist with the ones given in the configuration string. It also
+overrides the sortlist set in
+.B resolv.conf(5).
+Note that this function does not affect the order of results from
+\fBares_getaddrinfo(3)\fP.
 
 .SH RETURN VALUES
 .B ares_set_sortlist(3)
@@ -53,6 +51,6 @@ was invalid.
 c-ares library initialization not yet performed.
 .SH SEE ALSO
 .BR ares_init_options (3),
-.BR ares_dup(3)
+.BR ares_dup (3)
 .SH AVAILABILITY
 ares_set_sortlist(3) was added in c-ares 1.11.0
